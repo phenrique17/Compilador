@@ -16,7 +16,6 @@ class TS:
         # Palavras-chave
         self.ts['if'] = Token(Tag.KW_IF, 'if', 0, 0)
         self.ts['else'] = Token(Tag.KW_ELSE, 'else', 0, 0)
-        self.ts['then'] = Token(Tag.KW_THEN, 'then', 0, 0)
         self.ts['print'] = Token(Tag.KW_PRINT, 'print', 0, 0)
         self.ts['while'] = Token(Tag.KW_WHILE, 'while', 0, 0)
         self.ts['write'] = Token(Tag.KW_WRITE, 'write', 0, 0)
