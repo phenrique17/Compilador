@@ -19,7 +19,7 @@ if __name__ == "__main__":
             break
         token = lexer.proxToken()
 
-    # print("\nTabela de simbolos:\n")
-    # lexer.printTS()
-    # lexer.closeFile()
-    # print('\nFim da compilacao\n')
+    print("\nTabela de simbolos:\n")
+    lexer.printTS()
+    lexer.closeFile()
+    print('\nFim da compilacao\n')
