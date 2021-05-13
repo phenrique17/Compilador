@@ -1,6 +1,16 @@
-if var < 100 then
-   print var
+program nomeDoPrograma:
+
+/* comentario da linguagem */
+
+var nome = "Rafael Moreira Almeida", idade = 24, endereco = "Betim";
+
+if (var - 100) >= 200.123 then
+    // comentario da linguagem
+    @print var;
 else if var > 100 then
-   print var
-else 
-   print 100
+    /*
+        comentario da linguagem *&#ASHDKJ
+    */
+    @print var
+else
+   @print 100

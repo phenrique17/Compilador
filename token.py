@@ -1,8 +1,4 @@
 class Token:
-    """"
-   Classe que representa um token
-   """
-
     def __init__(self, nome, lexema, linha, coluna):
         self.nome = nome
         self.lexema = lexema

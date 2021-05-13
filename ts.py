@@ -1,18 +1,11 @@
 from tag import Tag
 from token import Token
 
-
 class TS:
-    '''
-   Classe para a tabela de simbolos representada por um dicionario: {'chave' : 'valor'}
-   '''
-
+    # dicionario: {"chave" : "valor"}
     def __init__(self):
-        '''
-      Repare que as palavras reservadas sao todas cadastradas
-      a principio com linha e coluna em zero
-      '''
         self.ts = {}
+
         # Palavras-chave
         self.ts['if'] = Token(Tag.KW_IF, 'if', 0, 0)
         self.ts['else'] = Token(Tag.KW_ELSE, 'else', 0, 0)
@@ -26,6 +19,7 @@ class TS:
         self.ts['or'] = Token(Tag.KW_OR, 'or', 0, 0)
         self.ts['and'] = Token(Tag.KW_AND, 'and', 0, 0)
         self.ts['program'] = Token(Tag.KW_PROGRAM, 'program', 0, 0)
+
         # Operadores
         self.ts['=='] = Token(Tag.OP_EQ, '==', 0, 0)
         self.ts['!='] = Token(Tag.OP_NE, '!=', 0, 0)
@@ -38,6 +32,7 @@ class TS:
         self.ts['*'] = Token(Tag.OP_MUL, '*', 0, 0)
         self.ts['/'] = Token(Tag.OP_DIV, '/', 0, 0)
         self.ts['='] = Token(Tag.OP_ATRIB, '=', 0, 0)
+
         # Operadores
         self.ts['{'] = Token(Tag.SMB_OBC, '{', 0, 0)
         self.ts['}'] = Token(Tag.SMB_CBC, '}', 0, 0)
@@ -45,9 +40,11 @@ class TS:
         self.ts[')'] = Token(Tag.SMB_CPA, ')', 0, 0)
         self.ts[','] = Token(Tag.SMB_COM, ',', 0, 0)
         self.ts[';'] = Token(Tag.SMB_SEM, ';', 0, 0)
+
         # Identificador
         self.ts['id'] = Token(Tag.ID, 'id', 0, 0)
         self.ts['lit'] = Token(Tag.LIT, 'lit', 0, 0)
+
         # Numeros
         self.ts['num'] = Token(Tag.NUM, 'num', 0, 0)
         self.ts['num_const'] = Token(Tag.NUM_CONST, 'num_const', 0, 0)
