@@ -2,6 +2,9 @@ from tag import Tag
 from token import Token
 from lexer import Lexer
 
+ # PAULO HENRIQUE DOS SANTOS - 11722528
+ # RAFAEL MOREIRA ALMEIDA - 11722680
+
 if __name__ == "__main__":
     lexer = Lexer('prog1.txt')
     print("\nLista de tokens:")
