@@ -54,6 +54,8 @@ class Lexer:
                     if c == '\n':
                         self.n_line = self.n_line + 1
                         self.n_column = 0
+                    if c == '\t':
+                        self.n_column = self.n_column + 3
                 elif c == '=':
                     estado = 2
                 elif c == '!':
@@ -71,22 +73,31 @@ class Lexer:
                 elif c == '/':
                     estado = 16
                 elif c == '+':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.OP_AD, "+", self.n_line, self.n_column)
                 elif c == '*':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.OP_MUL, "*", self.n_line, self.n_column)
                 elif c == '-':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.OP_MIN, "-", self.n_line, self.n_column)
                 elif c == '{':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.SMB_OBC, "{", self.n_line, self.n_column)
                 elif c == '}':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.SMB_CBC, "}", self.n_line, self.n_column)
                 elif c == ';':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.SMB_SEM, ";", self.n_line, self.n_column)
                 elif c == ',':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.SMB_COM, ",", self.n_line, self.n_column)
                 elif c == '(':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.SMB_OPA, "(", self.n_line, self.n_column)
                 elif c == ')':
+                    self.ts.updateLineColumn(c, self.n_line, self.n_column)
                     return Token(Tag.SMB_CPA, ")", self.n_line, self.n_column)
                 elif c == '"':
                     estado = 21
@@ -96,15 +107,21 @@ class Lexer:
                     if self.totalErros == 3:
                         return None
                     else:
-                        return ''
+                        estado = 1
+                        lexema = ""
+                        c = '\u0000'
+                        continue
             elif estado == 2:
                 if c == '=':
+                    self.ts.updateLineColumn("==", self.n_line, self.n_column)
                     return Token(Tag.OP_EQ, "==", self.n_line, self.n_column)
                 else:
                     self.retornaPonteiro()
+                    self.ts.updateLineColumn("=", self.n_line, self.n_column)
                     return Token(Tag.OP_ATRIB, "=", self.n_line, self.n_column)
             elif estado == 4:
                 if c == '=':
+                    self.ts.updateLineColumn("!=", self.n_line, self.n_column)
                     return Token(Tag.OP_NE, "!=", self.n_line, self.n_column)
 
                 self.sinalizaErroLexico("Caractere invalido [" + c + "] na linha " + str(self.n_line) + " e coluna " + str(self.n_column))
@@ -113,18 +130,25 @@ class Lexer:
                 if self.totalErros == 3:
                     return None
                 else:
-                    return ''
+                    estado = 1
+                    lexema = ""
+                    c = '\u0000'
+                    continue
             elif estado == 6:
                 if c == '=':
+                    self.ts.updateLineColumn("<=", self.n_line, self.n_column)
                     return Token(Tag.OP_LE, "<=", self.n_line, self.n_column)
 
                 self.retornaPonteiro()
+                self.ts.updateLineColumn("<", self.n_line, self.n_column)
                 return Token(Tag.OP_LT, "<", self.n_line, self.n_column)
             elif estado == 9:
                 if c == '=':
+                    self.ts.updateLineColumn(">=", self.n_line, self.n_column)
                     return Token(Tag.OP_GE, ">=", self.n_line, self.n_column)
 
                 self.retornaPonteiro()
+                self.ts.updateLineColumn(">", self.n_line, self.n_column)
                 return Token(Tag.OP_GT, ">", self.n_line, self.n_column)
             elif estado == 12:
                 if c.isdigit():
@@ -143,11 +167,13 @@ class Lexer:
                     token = self.ts.getToken(lexema)
 
                     if token is None:
-                        token = Token(Tag.ID, lexema, 0, 0)
+                        token = Token(Tag.ID, lexema, self.n_line, self.n_column)
                         self.ts.addToken(lexema, token)
+                    else:
+                        token.setColuna(self.n_column)
+                        token.setLinha(self.n_line)
+                        self.ts.updateLineColumn(lexema, self.n_line, self.n_column)
 
-                    token.setColuna(self.n_column)
-                    token.setLinha(self.n_line)
                     return token
             elif estado == 16:
                 if c == '/':
@@ -156,13 +182,17 @@ class Lexer:
                     estado = 18
                 else:
                     self.retornaPonteiro()
+                    self.ts.updateLineColumn("/", self.n_line, self.n_column)
                     return Token(Tag.OP_DIV, '/', self.n_line, self.n_column)
             elif estado == 17:
                 if c == '\n':
                     self.n_line = self.n_line + 1
                     self.n_column = 0
                     estado = 1
+                elif c == '\t':
+                    self.n_column = self.n_column + 3
                 elif c == '':
+                    self.ts.updateLineColumn("EOF", self.n_line, self.n_column)
                     return Token(Tag.EOF, "EOF", self.n_line, self.n_column)
             elif estado == 18:
                 if c == '*':
@@ -171,10 +201,13 @@ class Lexer:
                     self.n_line = self.n_line + 1
                     self.n_column = 1
                 elif c == '':
+                    self.ts.updateLineColumn("EOF", self.n_line, self.n_column)
                     return Token(Tag.EOF, "EOF", self.n_line, self.n_column - 1)
             elif estado == 19:
                 if c == '/':
                     estado = 1
+                elif c == '\t':
+                    self.n_column = self.n_column + 3
                 else:
                     estado = 18
             elif estado == 20:
@@ -185,14 +218,24 @@ class Lexer:
                     return Token(Tag.NUM_CONST, lexema, self.n_line, self.n_column)
             elif estado == 21:
                 if c == '"':
-                    return Token(Tag.CHAR_CONST, lexema, self.n_line, self.n_column - 1)
+                    return Token(Tag.CHAR_CONST, lexema, self.n_line, self.n_column)
                 elif c == '\n':
-                    self.n_line = self.n_line + 1
-                    self.n_column = 0
+                    self.sinalizaErroLexico("Caractere invalido [quebra de linha] na linha " + str(self.n_line) + " e coluna " + str(self.n_column))
+
+                    if self.totalErros == 3:
+                        return None
+                    else:
+                        self.n_line = self.n_line + 1
+                        estado = 1
+                        lexema = ""
+                        c = '\u0000'
+                        continue
                 elif c == '':
                     coluna = self.n_column
                     self.n_column = 0
                     return Token(Tag.CHAR_CONST, lexema, self.n_line, coluna)
+                elif c == '\t':
+                    self.n_column = self.n_column + 3
                 lexema += c
             # fim if's de estados
         # fim while

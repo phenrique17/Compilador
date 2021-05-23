@@ -51,12 +51,17 @@ class TS:
         self.ts['char_const'] = Token(Tag.CHAR_CONST, 'char_const', 0, 0)
 
     def getToken(self, lexema):
-        token = self.ts.get(lexema)
+        token = self.ts.get(lexema.lower())
         return token
+
+    def updateLineColumn(self, lexema, n_line, n_column):
+        token = self.ts.get(lexema.lower())
+        token.setColuna(n_column)
+        token.setLinha(n_line)
 
     def addToken(self, lexema, token):
         self.ts[lexema] = token
 
     def printTS(self):
         for k, t in (self.ts.items()):
-            print(k, ":", t.toString())
+            print(k, ":", t.toString(True))

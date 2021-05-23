@@ -23,5 +23,8 @@ class Token:
     def setColuna(self, coluna):
         self.coluna = coluna
 
-    def toString(self):
-        return "<" + str(self.nome.name) + ", \"" + str(self.lexema) + "\">"
+    def toString(self, linhaColuna = False):
+        if linhaColuna:
+            return "<" + str(self.nome.name) + ", \"" + str(self.lexema) + "\", " + str(self.linha) + ", " + str(self.coluna) + ">"
+        else:
+            return "<" + str(self.nome.name) + ", \"" + str(self.lexema) + "\">"

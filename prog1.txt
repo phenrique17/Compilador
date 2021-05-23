@@ -1,16 +1,18 @@
-program nomeDoPrograma:
-
 /* comentario da linguagem */
 
-var nome = "Rafael Moreira Almeida", idade = 24, endereco = "Betim";
+program nomeDoPrograma
+
+var nome = "Rafael Moreira Almeida", idade = 24;
+var altura = 1.75;
+var endereco = "Betim   Minas";
 
 if (var - 100) >= 200.123 then
     // comentario da linguagem
-    @print var;
+    print var;
 else if var > 100 then
     /*
         comentario da linguagem *&#ASHDKJ
     */
-    @print var
+    print var
 else
-   @print 100
+   print 100
