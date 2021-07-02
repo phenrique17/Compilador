@@ -1,22 +1,17 @@
-from tag import Tag
-from token import Token
 from lexer import Lexer
+from parser_pasc import Parser
 
 if __name__ == "__main__":
     lexer = Lexer('prog1.txt')
-    print("\nLista de tokens:")
-    token = lexer.proxToken()
+    parser = Parser(lexer)
 
-    while token is not None:
-        print(token.toString(), "Linha: " + str(token.getLinha()) + " Coluna: " + str(token.getColuna()))
+    parser.prog()
+    parser.lexer.closeFile()
 
-        if token.getNome() == Tag.EOF:
-            break
+    # token = lexer.proxToken() -> Os tokens estavam sendo chamados daqui
 
-        token = lexer.proxToken()
-
-    print("\n")
-    print("Tabela de simbolos:\n")
-    lexer.printTS()
-    lexer.closeFile()
-    print('\nFim da compilacao\n')
+    # print("\n")
+    # print("Tabela de simbolos:\n")
+    # lexer.printTS()
+    # lexer.closeFile()
+    # print('\nFim da compilacao\n')

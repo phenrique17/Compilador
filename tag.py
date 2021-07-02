@@ -79,3 +79,9 @@ class Tag(Enum):
     NUM = 33
     NUM_CONST = 34
     CHAR_CONST = 35
+
+    # Constantes para tipos
+    TIPO_VAZIO = 1000;
+    TIPO_LOGICO = 1001;
+    TIPO_NUMERO = 1002;
+    TIPO_ERRO = 1004;
