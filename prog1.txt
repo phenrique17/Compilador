@@ -1,20 +1,34 @@
-/* comentario da linguagem */
-// PAULO HENRIQUE DOS SANTOS - 11722528
-// RAFAEL MOREIRA ALMEIDA - 11722680
+/*
+Programa Teste
+*/
 
-program nomeDoPrograma
+// Este programa foi usado como teste
 
-var nome = "Rafael Moreira Almeida", idade = 24;
-var altura = 1.75;
-var endereco = "Betim   Minas";
+program P1
+   num x, y, z;
+   char k;
+{
+   write "Teste para o Lexer";
 
-if (var - 100) >= 200.123 then
-    // comentario da linguagem
-    print var;
-else if var > 100 then
-    /*
-        comentario da linguagem *&#ASHDKJ
-    */
-    print var
-else
-   print 100
+   read z;
+
+   while(not(z != 0)) {
+      write "Z = 0";
+      z = z + 1;
+   };
+
+   y = Z;
+   x = 10.123 * y;
+   k = "g";
+
+   if(y * 10 <= 100 and x / y >= 10) {
+      write "C#n4a.m@luca qu& d1z SIM!";
+   } else {
+      if(x + y != 10 or x - y == 10) {
+         write "OK";
+      }
+      else {
+         write k;
+      }; /* outro comentario */
+   };
+}

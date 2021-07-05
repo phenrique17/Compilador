@@ -142,7 +142,7 @@ class Lexer:
                     estado = 20
                 else:
                     self.retornaPonteiro()
-                    return Token(Tag.NUM, lexema, self.n_line, self.n_column)
+                    return Token(Tag.NUM_CONST, lexema, self.n_line, self.n_column)
             elif estado == 14:
                 if c.isalnum(): # Verificando se é um número ou uma letra
                     lexema += c
@@ -183,12 +183,16 @@ class Lexer:
                     self.n_line = self.n_line + 1
                     self.n_column = 1
                 elif c == '':
+                    self.sinalizaErroLexico("Comentário não foi fechado na linha " + str(self.n_line) + " e coluna " + str(self.n_column - 1))
                     return Token(Tag.EOF, "EOF", self.n_line, self.n_column - 1)
             elif estado == 19:
                 if c == '/':
                     estado = 1
                 elif c == '\t':
                     self.n_column = self.n_column + 3
+                elif c == '':
+                    self.sinalizaErroLexico("Comentário não foi fechado na linha " + str(self.n_line) + " e coluna " + str(self.n_column - 1))
+                    return Token(Tag.EOF, "EOF", self.n_line, self.n_column)
                 else:
                     estado = 18
             elif estado == 20:

@@ -10,6 +10,7 @@ class Parser():
     def __init__(self, lexer):
         self.lexer = lexer
         self.token = lexer.proxToken()
+        self.erros = 0
 
         if self.token is None:
             sys.exit(0)
@@ -21,9 +22,9 @@ class Parser():
     def sinalizaErroSintatico(self, message):
         print("[Erro Sintatico] na linha " + str(self.token.getLinha()) + " e coluna " + str(self.token.getColuna()) + ": ")
         print(message, "\n")
-        sys.exit(0)
 
     def advance(self):
+        #print("[DEBUG] token: ", self.token.toString())
         self.token = self.lexer.proxToken()
         if self.token is None:
             sys.exit(0)
@@ -35,25 +36,32 @@ class Parser():
         else:
             return False
 
+    def skip(self, message):
+        self.sinalizaErroSintatico(message)
+        self.erros += 1
+        if self.erros == 5:
+            print("[LIMITE DE ERROS ALCANÇADO]")
+            sys.exit(0)
+
     #======================================================================================
 
     def prog(self):
         if (not self.eat(Tag.KW_PROGRAM)):
-            self.sinalizaErroSintatico("Esperado 'program'")
+            self.skip("Esperado 'program'")
         if (not self.eat(Tag.ID)):
-            self.sinalizaErroSintatico("Esperado 'id'")
+            self.skip("Esperado 'id'")
         self.body()
 
     def body(self):
         self.declList()
 
         if(not self.eat(Tag.SMB_OBC)):
-            self.sinalizaErroSintatico("Esperado '{'")
+            self.skip("Esperado '{'")
 
         self.stmtList()
 
         if (not self.eat(Tag.SMB_CBC)):
-            self.sinalizaErroSintatico("Esperado '}'")
+            self.skip("Esperado '}'")
 
     def declList(self):
         # Duvida!!! no 'KW_NUM'
@@ -61,13 +69,13 @@ class Parser():
             self.decl()
 
             if (not self.eat(Tag.SMB_SEM)):
-                self.sinalizaErroSintatico("Esperado ';'")
+                self.skip("Esperado ';'")
 
             self.declList()
         elif(self.token.getNome() == Tag.SMB_OBC):
             return
         else:
-            self.sinalizaErroSintatico("Esperado 'palavra-chave' ou '{'")
+            self.skip("Esperado 'palavra-chave' ou '{'")
 
     def decl(self):
         self.type()
@@ -79,11 +87,11 @@ class Parser():
         elif(self.token.getNome() == Tag.KW_CHAR):
             self.advance()
         else:
-            self.sinalizaErroSintatico("Esperado uma palavra-chave 'num' ou 'char'")
+            self.skip("Esperado uma palavra-chave 'num' ou 'char'")
 
     def idList(self):
         if (not self.eat(Tag.ID)):
-            self.sinalizaErroSintatico("Esperado 'id'")
+            self.skip("Esperado 'id'")
 
         self.idListLinha()
 
@@ -94,20 +102,20 @@ class Parser():
         elif(self.token.getNome() == Tag.SMB_SEM):
             return
         else:
-            self.sinalizaErroSintatico("Esperado ',' ou ';'")
+            self.skip("Esperado ',' ou ';'")
 
     def stmtList(self):
-        if(self.token.getNome() == Tag.ID):
+        if(self.token.getNome() in [Tag.ID, Tag.KW_IF, Tag.KW_READ, Tag.KW_WRITE, Tag.KW_WHILE]):
             self.stmt()
 
             if (not self.eat(Tag.SMB_SEM)):
-                self.sinalizaErroSintatico("Esperado ';'")
+                self.skip("Esperado ';'")
 
             self.stmtList()
         elif(self.token.getNome() == Tag.SMB_CBC):
             return
         else:
-            self.sinalizaErroSintatico("Esperado 'id' ou '}'")
+            self.skip("Esperado 'id' ou '}'")
 
     def stmt(self):
         if(self.token.getNome() == Tag.ID):
@@ -121,36 +129,36 @@ class Parser():
         elif(self.token.getNome() == Tag.KW_WRITE):
             self.writeStmt()
         else:
-            self.sinalizaErroSintatico("Esperado uma 'palavra-chave'")
+            self.skip("Esperado uma 'palavra-chave'")
 
     def assignStmt(self):
         if (not self.eat(Tag.ID)):
-            self.sinalizaErroSintatico("Esperado 'id'")
+            self.skip("Esperado 'id'")
 
         if (not self.eat(Tag.OP_ATRIB)):
-            self.sinalizaErroSintatico("Esperado '='")
+            self.skip("Esperado '='")
 
         self.simpleExpr()
 
     def ifStmt(self):
         if(not self.eat(Tag.KW_IF)):
-            self.sinalizaErroSintatico("Esperado 'if'")
+            self.skip("Esperado 'if'")
 
         if(not self.eat(Tag.SMB_OPA)):
-            self.sinalizaErroSintatico("Esperado '('")
+            self.skip("Esperado '('")
 
         self.expression()
 
         if(not self.eat(Tag.SMB_CPA)):
-            self.sinalizaErroSintatico("Esperado ')'")
+            self.skip("Esperado ')'")
 
         if(not self.eat(Tag.SMB_OBC)):
-            self.sinalizaErroSintatico("Esperado '{'")
+            self.skip("Esperado '{'")
 
         self.stmtList()
 
         if(not self.eat(Tag.SMB_CBC)):
-            self.sinalizaErroSintatico("Esperado '}'")
+            self.skip("Esperado '}'")
 
         self.ifStmtLinha()
 
@@ -159,50 +167,50 @@ class Parser():
             self.advance()
 
             if(not self.eat(Tag.SMB_OBC)):
-                self.sinalizaErroSintatico("Esperado '{'")
+                self.skip("Esperado '{'")
 
             self.stmtList()
 
             if(not self.eat(Tag.SMB_CBC)):
-                self.sinalizaErroSintatico("Esperado '}'")
+                self.skip("Esperado '}'")
         elif(self.token.getNome() == Tag.SMB_SEM):
             return
         else:
-            self.sinalizaErroSintatico("Esperado 'palavra-chave' ou ';'")
+            self.skip("Esperado 'palavra-chave' ou ';'")
 
     def whileStmt(self):
         self.stmtPrefix()
 
         if (not self.eat(Tag.SMB_OBC)):
-            self.sinalizaErroSintatico("Esperado '{'")
+            self.skip("Esperado '{'")
 
         self.stmtList()
 
         if (not self.eat(Tag.SMB_CBC)):
-            self.sinalizaErroSintatico("Esperado '}'")
+            self.skip("Esperado '}'")
 
     def stmtPrefix(self):
         if (not self.eat(Tag.KW_WHILE)):
-            self.sinalizaErroSintatico("Esperado 'while'")
+            self.skip("Esperado 'while'")
 
         if (not self.eat(Tag.SMB_OPA)):
-            self.sinalizaErroSintatico("Esperado '('")
+            self.skip("Esperado '('")
 
         self.expression()
 
         if (not self.eat(Tag.SMB_CPA)):
-            self.sinalizaErroSintatico("Esperado ')'")
+            self.skip("Esperado ')'")
 
     def readStmt(self):
         if (not self.eat(Tag.KW_READ)):
-            self.sinalizaErroSintatico("Esperado 'read'")
+            self.skip("Esperado 'read'")
 
         if (not self.eat(Tag.ID)):
-            self.sinalizaErroSintatico("Esperado 'id'")
+            self.skip("Esperado 'id'")
 
     def writeStmt(self):
         if (not self.eat(Tag.KW_WRITE)):
-            self.sinalizaErroSintatico("Esperado 'write'")
+            self.skip("Esperado 'write'")
 
         self.simpleExpr()
 
@@ -218,7 +226,7 @@ class Parser():
         elif(self.token.getNome() == Tag.SMB_CPA):
             return
         else:
-            self.sinalizaErroSintatico("Esperado 'palavra-chave' ou ')'")
+            self.skip("Esperado 'palavra-chave' ou ')'")
 
     def simpleExpr(self):
         self.term()
@@ -235,7 +243,7 @@ class Parser():
         elif(self.token.getNome() in lis_token_2):
             return
         else:
-            self.sinalizaErroSintatico("Esperado 'operador', 'simbolo' ou 'palavra-chave'")
+            self.skip("Esperado 'operador', 'simbolo' ou 'palavra-chave'")
 
     def term(self):
         self.factorB()
@@ -251,14 +259,14 @@ class Parser():
         elif(self.token.getNome() in lista):
             return
         else:
-            self.sinalizaErroSintatico("Esperado 'operador', 'simbolo' ou 'palavra-chave'")
+            self.skip("Esperado 'operador', 'simbolo' ou 'palavra-chave'")
 
     def factorB(self):
         self.factorA()
         self.factorBLinha()
 
     def factorBLinha(self):
-        lista = [Tag.OP_EQ, Tag.OP_GT, Tag.OP_GE, Tag.OP_LT, Tag.OP_LE, Tag.OP_NE, Tag.OP_AD, Tag.OP_MIN]
+        lista = [Tag.SMB_SEM, Tag.SMB_CPA, Tag.KW_OR, Tag.KW_AND, Tag.OP_EQ, Tag.OP_GT, Tag.OP_GE, Tag.OP_LT, Tag.OP_LE, Tag.OP_NE, Tag.OP_AD, Tag.OP_MIN]
 
         if(self.token.getNome() == Tag.OP_MUL or self.token.getNome() == Tag.OP_DIV):
             self.mulop()
@@ -267,17 +275,24 @@ class Parser():
         elif(self.token.getNome() in lista):
             return
         else:
-            self.sinalizaErroSintatico("Esperado 'operador'")
+            self.skip("Esperado 'operador'")
 
     def factorA(self):
-        lista = [Tag.ID, Tag.SMB_OPA, Tag.NUM_CONST, Tag.CHAR_CONST]
+        lista = [Tag.ID, Tag.SMB_OPA, Tag.NUM, Tag.NUM_CONST, Tag.CHAR_CONST]
 
+        if(self.token.getNome() == Tag.KW_NOT):
+            self.advance()
+            self.factor()
+        else:
+            self.factor()
+        '''
         if(self.token.getNome() in lista):
             self.factor()
         elif(self.token.getNome() == Tag.KW_NOT):
             self.factor()
         else:
-            self.sinalizaErroSintatico("Esperado 'id', '(', 'numérico' ou 'not'")
+            self.skip("Esperado 'id', '(', 'numérico' ou 'not'")
+        '''
 
     def factor(self):
         if(self.token.getNome() == Tag.ID):
@@ -289,9 +304,9 @@ class Parser():
             self.expression()
 
             if (not self.eat(Tag.SMB_CPA)):
-                self.sinalizaErroSintatico("Esperado ')'")
+                self.skip("Esperado ')'")
         else:
-            self.sinalizaErroSintatico("Esperado 'id', 'numérico' ou '('")
+            self.skip("Esperado 'id', 'numérico' ou '('")
 
     def logop(self):
         if(self.token.getNome() == Tag.KW_OR):
@@ -299,15 +314,15 @@ class Parser():
         elif(self.token.getNome() == Tag.KW_AND):
             self.advance()
         else:
-            self.sinalizaErroSintatico("Esperado 'or' ou 'and'")
+            self.skip("Esperado 'or' ou 'and'")
 
     def relop(self):
-        lista = [Tag.OP_EQ, Tag.OP_EQ, Tag.OP_EQ, Tag.OP_EQ, Tag.OP_EQ, Tag.OP_EQ]
+        lista = [Tag.OP_EQ,Tag.OP_GT,Tag.OP_GE,Tag.OP_LT,Tag.OP_LE,Tag.OP_NE]
 
         if(self.token.getNome() in lista):
             self.advance()
         else:
-            self.sinalizaErroSintatico("Esperado 'operador'")
+            self.skip("Esperado 'operador'")
 
     def addop(self):
         if(self.token.getNome() == Tag.OP_AD):
@@ -315,7 +330,7 @@ class Parser():
         elif(self.token.getNome() == Tag.OP_MIN):
             self.advance()
         else:
-            self.sinalizaErroSintatico("Esperado '+' ou '-'")
+            self.skip("Esperado '+' ou '-'")
 
     def mulop(self):
         if(self.token.getNome() == Tag.OP_MUL):
@@ -323,7 +338,7 @@ class Parser():
         elif(self.token.getNome() == Tag.OP_DIV):
             self.advance()
         else:
-            self.sinalizaErroSintatico("Esperado '*' ou '/'")
+            self.skip("Esperado '*' ou '/'")
 
     def constant(self):
         if(self.token.getNome() == Tag.NUM_CONST):
@@ -331,4 +346,4 @@ class Parser():
         elif(self.token.getNome() == Tag.CHAR_CONST):
             self.advance()
         else:
-            self.sinalizaErroSintatico("Esperado 'numérico'")
+            self.skip("Esperado 'numérico'")

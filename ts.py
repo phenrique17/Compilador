@@ -46,7 +46,6 @@ class TS:
         self.ts['lit'] = Token(Tag.LIT, 'lit', 0, 0)
 
         # Numeros
-        self.ts['num'] = Token(Tag.NUM, 'num', 0, 0)
         self.ts['num_const'] = Token(Tag.NUM_CONST, 'num_const', 0, 0)
         self.ts['char_const'] = Token(Tag.CHAR_CONST, 'char_const', 0, 0)
 
