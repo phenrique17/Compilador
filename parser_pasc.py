@@ -20,11 +20,12 @@ class Parser():
         print(message, "\n")
 
     def sinalizaErroSintatico(self, message):
+        print("\n")
         print("[Erro Sintatico] na linha " + str(self.token.getLinha()) + " e coluna " + str(self.token.getColuna()) + ": ")
         print(message, "\n")
 
     def advance(self):
-        #print("[DEBUG] token: ", self.token.toString())
+        print("[DEBUG] token: ", self.token.toString())
         self.token = self.lexer.proxToken()
         if self.token is None:
             sys.exit(0)
